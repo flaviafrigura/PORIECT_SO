@@ -60,55 +60,60 @@ void create_district(const char *district)
     }
 }
 
-int parse_condition(char *input,char *field,char *op,char *value)
+int parse_condition(const char *input,char *field,char *op,char *value)
 {
-    return sscanf(input,"%[^:]:%[^:]:%s",field,op,value)==3;
+    if(sscanf(input,"%[^:]:%[^:]:%s",field,op,value)!=3)
+        return 0;
+
+    if(strcmp(field,"severity")!=0 &&
+       strcmp(field,"category")!=0 &&
+       strcmp(field,"inspector")!=0 &&
+       strcmp(field,"timestamp")!=0)
+        return 0;
+
+    if(strcmp(op,"==")!=0 &&
+       strcmp(op,"!=")!=0 &&
+       strcmp(op,">")!=0 &&
+       strcmp(op,"<")!=0 &&
+       strcmp(op,">=")!=0 &&
+       strcmp(op,"<=")!=0)
+        return 0;
+
+    return 1;
 }
 
-int match_condition(report *r,char *field,char *op,char *value)
+int cmp_int(int a,int b,const char *op)
+{
+    if(!strcmp(op,"=="))return a==b;
+    if(!strcmp(op,"!="))return a!=b;
+    if(!strcmp(op,">"))return a>b;
+    if(!strcmp(op,"<"))return a<b;
+    if(!strcmp(op,">="))return a>=b;
+    if(!strcmp(op,"<="))return a<=b;
+    return 0;
+}
+
+int cmp_str(const char *a,const char *b,const char *op)
+{
+    if(!strcmp(op,"=="))return strcmp(a,b)==0;
+    if(!strcmp(op,"!="))return strcmp(a,b)!=0;
+    return 0;
+}
+
+int match_condition(report *r,const char *field,const char *op,const char *value)
 {
     if(strcmp(field,"severity")==0)
-    {
-        int v=atoi(value);
-        if(!strcmp(op,"=="))
-            return r->severity==v;
-        if(!strcmp(op,"!="))
-            return r->severity!=v;
-        if(!strcmp(op,">"))
-            return r->severity>v;
-        if(!strcmp(op,"<"))
-            return r->severity<v;
-        if(!strcmp(op,">="))
-            return r->severity>=v;
-        if(!strcmp(op,"<="))
-            return r->severity<=v;
-    }
-    if(strcmp(field,"category")==0)
-    {
-        if(!strcmp(op,"=="))
-            return strcmp(r->category,value)==0;
-        if(!strcmp(op,"!="))
-            return strcmp(r->category,value)!=0;
-    }
-    if(strcmp(field,"inspector")==0)
-    {
-        if(!strcmp(op,"=="))
-            return strcmp(r->inspector,value)==0;
-    }
+        return cmp_int(r->severity,atoi(value),op);
+
     if(strcmp(field,"timestamp")==0)
-    {
-        long v=atol(value);
-        if(!strcmp(op,"=="))
-            return r->timestamp==v;
-        if(!strcmp(op,">"))
-            return r->timestamp>v;
-        if(!strcmp(op,"<"))
-            return r->timestamp<v;
-        if(!strcmp(op,">="))
-            return r->timestamp>=v;
-        if(!strcmp(op,"<="))
-            return r->timestamp<=v;
-    }
+        return cmp_int(r->timestamp,atol(value),op);
+
+    if(strcmp(field,"category")==0)
+        return cmp_str(r->category,value,op);
+
+    if(strcmp(field,"inspector")==0)
+        return cmp_str(r->inspector,value,op);
+
     return 0;
 }
 
