@@ -21,12 +21,13 @@ void sigusr_handler(int sig)
 
 int main()
 {
-    int file=open(",monitor_pid",O_CREAT|O_WRONLY|O_TRUNC,0644);
+    int file=open(".monitor_pid",O_CREAT|O_WRONLY|O_TRUNC,0644);
     if(file<0)
     {
         perror("Error with the PID file");
         return 1;
     }
+    printf("cevaceva\n");
     char buffer[32];
     sprintf(buffer,"%d\n",getpid());
     write(file,buffer,strlen(buffer));
@@ -38,6 +39,7 @@ int main()
     memset(&signalusr1,0,sizeof(signalusr1));
     signalusr1.sa_handler=sigusr_handler;
     sigaction(SIGUSR1,&signalusr1,NULL);
+    printf("Monitor is active now. PID is %d\n",getpid());
     while(1)
     {
         pause();

@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <signal.h>
 
 #define NAME_LEN 32
 #define CATEGORY_LEN 32
@@ -117,6 +118,41 @@ int match_condition(report *r,const char *field,const char *op,const char *value
     return 0;
 }
 
+void notify_monitor(char *district,char *role,char *user)
+{
+    int pidfile=open(".monitor_pid",O_RDONLY);
+    char path[256];
+    sprintf(path,"%s/logged_district",district);
+    int file=open(path,O_WRONLY|O_APPEND);
+    if(file<0)
+    {
+        return;
+    }
+    char message[256];
+    time_t timenow=time(NULL);
+    if(pidfile<0)
+    {
+        sprintf(message,"%ld [%s] %s: Monitor not found\n",timenow,role,user);
+        write(file,message,strlen(message));
+        close(file);
+        return;
+    }
+    char buffer[32];
+    read(pidfile,buffer,sizeof(buffer));
+    close(pidfile);
+    pid_t pid=atoi(buffer);
+    if (kill(pid,SIGUSR1)==0)
+    {
+        sprintf(message,"%ld [%s] %s: Monitor notified successfully\n",timenow,role,user);
+    }
+    else
+    {
+        sprintf(message,"%ld [%s] %s: Failed to notify monitor\n",timenow,role,user);
+    }
+    write(file,message,strlen(message));
+    close(file);
+}
+
 void add_report(char *district,char *role,char *user, double lat,double lon,char *category,int severity,char *desc)
 {
     struct stat st;
@@ -159,6 +195,7 @@ void add_report(char *district,char *role,char *user, double lat,double lon,char
     r.timestamp=time(NULL);
     strncpy(r.description,desc,DESC_LEN);
     write(file,&r,sizeof(r));
+    notify_monitor(district,role,user);
     close(file);
 }
 
