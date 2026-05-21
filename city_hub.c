@@ -8,6 +8,12 @@
 #include <time.h>
 #include <signal.h>
 
+typedef struct{
+    char name[100];
+    int totalscore;
+    int count;
+}inspector;
+
 void start_monitor()
 {
     int filedes[2];
@@ -66,6 +72,8 @@ void start_monitor()
 
 void calculate_scores(char *districts[],int count)
 {
+    inspector persons[200];
+    int person_count=0;
     for(int i=0;i<count;i++)
     {
         int filedes[2];
@@ -92,16 +100,78 @@ void calculate_scores(char *districts[],int count)
             exit(1);
         }
         close(filedes[1]);
-        char buffer[512];
+        char buffer[4096];
         int bytes_read;
+        char output[32768] = "";
         while((bytes_read=read(filedes[0],buffer,sizeof(buffer)-1))>0)
         {
             buffer[bytes_read]='\0';
             printf("%s",buffer);
+            strncat(output,buffer,sizeof(output)-strlen(output)-1);
         }
         close(filedes[0]);
         waitpid(scorer,NULL,0);
+        char *line=strtok(output,"\n");
+        while(line!=NULL)
+        {
+            char name[100];
+            int score;
+            if(sscanf(line,"Inspector: %s | Workload Score %d",name,&score)==2)
+            {
+                int found=-1;
+                for(int j=0;j<person_count;j++)
+                {
+                    if(strcmp(persons[j].name,name)==0)
+                    {
+                        found=j;
+                        break;
+                    }
+                }
+                if(found==-1)
+                {
+                    strcpy(persons[person_count].name,name);
+                    persons[person_count].totalscore=score;
+                    persons[person_count].count=1;
+                    person_count++;
+                }
+                else
+                {
+                    persons[found].totalscore+=score;
+                    persons[found].count++;
+                }
+            }
+            line=strtok(NULL,"\n");
+        }
     }
+    printf("Total overall:\n");
+    if(person_count == 0)
+    {
+        printf("No inspectors found in any district.\n");
+        return;
+    }
+    for(int i=0;i<person_count-1;i++)
+    {
+        for(int j=i+1;j<person_count;j++)
+        {
+            if(persons[i].totalscore<persons[j].totalscore)
+            {
+                inspector temp=persons[i];
+                persons[i]=persons[j];
+                persons[j]=temp;
+            }
+        }
+    }
+    for(int i=0;i<person_count;i++)
+    {
+        printf("%10s | %2d | %d\n",persons[i].name,persons[i].totalscore,persons[i].count);
+    }
+    printf("Total inspectors: %d\n",person_count);
+    int total=0;
+    for(int i=0;i<person_count;i++)
+    {
+        total+=persons[i].totalscore;
+    }
+    printf("Combined workload score across all inspectors: %d\n",total);
 }
 
 int main()
