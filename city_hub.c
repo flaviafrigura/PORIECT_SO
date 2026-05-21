@@ -19,13 +19,13 @@ void start_monitor()
     int filedes[2];
     if(pipe(filedes)<0)
     {
-        perror("Problema creare pipe");
+        perror("Problem when creating the pipe");
         return;
     }
     pid_t hub_mon=fork();
     if(hub_mon<0)
     {
-        perror("Problema creare proces copil hub_mon");
+        perror("Problem when creating child process hub_mon);
         close(filedes[0]);
         close(filedes[1]);
         return;
@@ -35,7 +35,7 @@ void start_monitor()
         pid_t monitor=fork();
         if(monitor<0)
         {
-            perror("Problema creare proces copil monitor");
+            perror("Problem when creating child process monitor");
             exit(1);
         }
         if(monitor==0)
@@ -44,15 +44,15 @@ void start_monitor()
             dup2(filedes[1],STDOUT_FILENO);
             close(filedes[1]);
             execl("./monitor_reports","monitor_reports",NULL);
-            perror("A esuat inlocuirea procesului cu monitor_reports");
+            perror("Error when trying to replace ./monitor_reports");
             exit(1);
         }
         close(filedes[1]);
         char buffer[512];
         int bytes_read;
-        while((bytes_read=read(filedes[0],buffer,sizeof(buffer)-1))>0)
+        while((bytesread=read(filedes[0],buffer,sizeof(buffer)-1))>0)
         {
-            buffer[bytes_read]='\0';
+            buffer[bytesread]='\0';
             printf("MONITOR: %s",buffer);
             fflush(stdout);
             if(strstr(buffer,"TERMINATED:")!=NULL)
@@ -79,13 +79,13 @@ void calculate_scores(char *districts[],int count)
         int filedes[2];
         if(pipe(filedes)<0)
         {
-            perror("Problema creare pipe");
+            perror("Problem when creating the pipe");
             continue;
         }
         pid_t scorer=fork();
         if(scorer<0)
         {
-            perror("Problema creare proces");
+            perror("Problem when creating the process");
             close(filedes[0]);
             close(filedes[1]);
             continue;
@@ -96,16 +96,16 @@ void calculate_scores(char *districts[],int count)
             dup2(filedes[1],STDOUT_FILENO);
             close(filedes[1]);
             execl("./scorer","scorer",districts[i],NULL);
-            perror("Problema la execul scorer-ului");
+            perror("Problem at scorer exec");
             exit(1);
         }
         close(filedes[1]);
         char buffer[4096];
-        int bytes_read;
+        int bytesread;
         char output[32768] = "";
-        while((bytes_read=read(filedes[0],buffer,sizeof(buffer)-1))>0)
+        while((bytesread=read(filedes[0],buffer,sizeof(buffer)-1))>0)
         {
-            buffer[bytes_read]='\0';
+            buffer[bytesread]='\0';
             printf("%s",buffer);
             strncat(output,buffer,sizeof(output)-strlen(output)-1);
         }
@@ -193,15 +193,15 @@ int main()
         {
             char *districts[20];
             int count=0;
-            char *token=strtok(command," ");
-            token=strtok(NULL," ");
-            while(token!=NULL&&count<20)
+            char *p=strtok(command," ");
+            p=strtok(NULL," ");
+            while(p!=NULL&&count<20)
             {
-                districts[count++]=token;
-                token=strtok(NULL," ");
+                districts[count++]=p;
+                p=strtok(NULL," ");
             }
             if(count==0)
-                printf("Folosire: calculate_scores <district1> [district2] ...\n");
+                printf("You didn't specify any districts\n");
             else
                 calculate_scores(districts,count);
         }
