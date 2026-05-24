@@ -11,13 +11,13 @@ void handler(int sig)
 {
     if(sig==SIGINT)
     {
-        printf("TERMINATED: SIGINT recieved. Terminating.\n");
+        printf("TERMINATED: SIGINT primit. Se termina.\n");
         unlink(".monitor_pid");
         exit(0);
     }
     else if(sig==SIGUSR1)
     {
-        printf("MSG: SIGUSR1 recieved. Adding new report.\n");
+        printf("MSG: SIGUSR1 primit. Se adauga report.\n");
     }
 }
 
@@ -32,13 +32,12 @@ int main()
         pid_t existing=(pid_t)atoi(buffer);
         if((existing>0)&&(kill(existing,0)==0))
         {
-            printf("MSG:Another monitor is already running (PID %d). Exiting.\n",existing);
+            printf("MSG:Mai ruleaza un monitor (PID %d). Iesire.\n",existing);
             fflush(stdout);
             return 1;
         }
         unlink(".monitor_pid");
     }
-
     file=open(".monitor_pid",O_CREAT|O_WRONLY|O_TRUNC,0644);
     if(file<0)
     {
@@ -56,7 +55,7 @@ int main()
     sa.sa_flags=0;
     sigaction(SIGINT,&sa,NULL);
     sigaction(SIGUSR1,&sa,NULL);
-    printf("MSG:Monitor is active now. PID is %d\n",getpid());
+    printf("MSG:Monitor activ acum. PID: %d\n",getpid());
     fflush(stdout);
     while(1)
     {
