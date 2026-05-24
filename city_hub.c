@@ -49,7 +49,7 @@ void start_monitor()
         }
         close(filedes[1]);
         char buffer[512];
-        int bytes_read;
+        int bytesread;
         while((bytesread=read(filedes[0],buffer,sizeof(buffer)-1))>0)
         {
             buffer[bytesread]='\0';

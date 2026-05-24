@@ -11,12 +11,14 @@ void handler(int sig)
 {
     if(sig==SIGINT)
     {
-        printf("TERMINATED: SIGINT primit. Se termina.\n");
+        fflush(stdout);
+        printf("TERMINAT: SIGINT primit. Se termina.\n");
         unlink(".monitor_pid");
         exit(0);
     }
     else if(sig==SIGUSR1)
     {
+        fflush(stdout);
         printf("MSG: SIGUSR1 primit. Se adauga report.\n");
     }
 }

@@ -523,6 +523,7 @@ void remove_district(char *district,char *role,char *user)
         printf("Permisiune refuzata: managerul nu are drept de scriere\n");
         return;
     }
+    log_action(district,role,user,"remove_district");
     char link[256];
     sprintf(link,"active_reports-%s",district);
     unlink(link);
@@ -539,7 +540,6 @@ void remove_district(char *district,char *role,char *user)
         exit(1);
     }
     waitpid(pid,NULL,0);
-    log_action(district,role,user,"remove_district");
 }
 
 int main(int argc,char *argv[])

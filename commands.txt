@@ -7,4 +7,11 @@ gcc ./scorer.c -o scorer
 ./monitor_reports
 ./city_hub
 
+./city_manager --role manager --user agatha --add soarelui --lat 44.43 --lon 26.10 --category road --severity 3 --desc "Groapa mare"
+./city_manager --role manager --user agatha --add soarelui --lat 43.43 --lon 26.34 --category lighting --severity 2 --desc "Pana de curent"
+./city_manager --role inspector --user ioana --add soarelui --lat 43.11 --lon 26.45 --category lighting --severity 2 --desc "Pana de curent"
+./city_manager --role inspector --user ioana --add soarelui --lat 43.00 --lon 26.00 --category flood --severity 1 --desc "Strada inundata"
+
+
+
 
