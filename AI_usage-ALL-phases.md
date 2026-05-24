@@ -1,42 +1,37 @@
-# AI_usage-ALL-phases.md
+PHASE 1
 
----
-
-## PHASE 1
-
-### 1. Instrument utilizat
+1. Instrument utilizat
 
 Pentru partea asistată de inteligență artificială am folosit ChatGPT, ca suport pentru generarea și analizarea unor funcții cerute în enunț.
 
-### 2. Scopul utilizării AI
+2. Scopul utilizării AI
 
 AI-ul a fost utilizat pentru implementarea a două funcții:
 
-- `parse_condition`
-- `match_condition`
+- parse_condition
+- match_condition
 
-### 3. Prompturile utilizate
+3. Prompturile utilizate
 
-**Prompt 1 – Parsarea condițiilor**
+Prompt 1 – Parsarea condițiilor
 
-> Lucrez la un program în C care implementează un sistem de filtrare pentru rapoarte stocate în fișiere binare.
-> Condițiile sunt primite din linia de comandă sub forma field:operator:value (de exemplu severity:>=:2 sau category:==:road).
-> Am nevoie de o funcție în C care primește acest string și separă cele trei componente (câmp, operator, valoare) în variabile
-> diferite (char arrays). Fără alocări dinamice, folosind funcții din C. Funcția ar trebui să întoarcă un cod de succes/eșec dacă parsarea nu reușește.
+Lucrez la un program în C care implementează un sistem de filtrare pentru rapoarte stocate în fișiere binare.
+Condițiile sunt primite din linia de comandă sub forma field:operator:value (de exemplu severity:>=:2 sau category:==:road).
+Am nevoie de o funcție în C care primește acest string și separă cele trei componente (câmp, operator, valoare) în variabile 
+diferite (char arrays). Fără alocări dinamice, folosind funcții din C. Funcția ar trebui să întoarcă un cod de succes/eșec dacă parsarea nu reușește.
 
-**Prompt 2 – Verificarea condițiilor**
+Prompt 2 – Verificarea condițiilor
 
-> Am o structură report definită: severity (int), category (string), inspector (string), timestamp (time_t)
-> Vreau să imi scrii o funcție în C care verifică dacă un obiect report respectă o condiție de forma field:operator:value.
-> Operatorii sunt: ==, !=, <, <=, >, >=.
-> Trateaza diferența între tipuri: comparații numerice pentru severity și timestamp, comparații de string pentru category și inspector.
-> Funcția trebuie să returneze 1 (true) si 0 (fals).
+Am o structură report definită: severity (int), category (string), inspector (string), timestamp (time_t)
+Vreau să imi scrii o funcție în C care verifică dacă un obiect report respectă o condiție de forma field:operator:value.
+Operatorii sunt: ==, !=, <, <=, >, >=.
+Trateaza diferența între tipuri: comparații numerice pentru severity și timestamp comparații de string pentru category și inspector.
+Funcția trebuie să returneze 1 (true) si 0 (fals).
 
-### 4. Codul generat inițial de AI
+4. Codul generat inițial de AI
 
 AI-ul a generat:
 
-```c
 int parse_condition(char *input,char *field,char *op,char *value)
 {
     return sscanf(input,"%[^:]:%[^:]:%s",field,op,value)==3;
@@ -88,18 +83,16 @@ int match_condition(report *r,char *field,char *op,char *value)
     }
     return 0;
 }
-```
 
-### 5. Probleme identificate
+5. Probleme identificate
 
-Codul generat pentru `match_condition` este deja destul de bun, însă repetitiv. Pentru `timestamp` și `severity` sunt folosite aceleași comparații, și nu ar fi necesar să duplicăm codul. Asemenea și pentru `inspector` și `category`.
-De asemenea, pentru funcția `parse_condition`, codul generat nu este destul de robust, nu ia în calcul situațiile de `parsing!=3`, validare field, operator și valoare.
+Codul generat pentru match_condition este deja destul de bun, însă repetitiv. Pentru timestamp si severity sunt folosite aceleasi comparații, și nu ar fi necesar sa duplicam codul. Asemena și pentru inspector și category.
+De asemenea, pentru funcția parse_condition, codul generat nu este destul de robust, nu ia in calcul situațiile de parsing!=3, validare field, operator si valoare.
 
-### 6. Îmbunătățiri aduse
+6. Îmbunătățiri aduse
 
 Am modificat codul generat astfel:
 
-```c
 int parse_condition(const char *input,char *field,char *op,char *value)
 {
     if(sscanf(input,"%[^:]:%[^:]:%s",field,op,value)!=3)
@@ -156,54 +149,53 @@ int match_condition(Report *r,const char *field,const char *op,const char *value
 
     return 0;
 }
-```
 
-Pentru funcția `parse` am utilizat mai multe verificări, pentru mai multe tipuri de situații.
-Pentru funcția `match` am creat alte funcții auxiliare care să evite duplicarea codului.
+Pentru funcția parse am utilizat mai multe verificări, pentru mai multe tipuri de situații.
+Pentru funcșia match am creat alte funcții auxiliare care să evite duplicarea codului.
 
-### 7. Ce am învățat
+7. Ce am învățat
 
-- Să analizez critic cod generat de AI
-- Validarea datelor de intrare
-- Integrarea unor funcții mici într-un sistem mai mare
-- Implementarea filtrării pe bază de condiții
-- Evitarea duplicării codului
-- Luarea în calcul a tuturor variantelor de testare
+Să analizez critic cod generat de AI
+Validarea datelor de intrare
+Integrarea unor funcții mici într-un sistem mai mare
+Implementarea filtrării pe bază de condiții
+Evitarea duplicării codului
+Luarea în calcul a tuturor variantelor de testarw
 
-### 8. Concluzie
+8. Concluzie
 
 AI-ul a fost util pentru generarea unei baze inițiale, dar a fost necesară intervenția mea pentru completarea logicii.
 
----
 
-## PHASE 2
 
-### 1. Instrument utilizat
+
+PHASE 2
+
+
+1. Instrument utilizat
 
 Pentru partea asistată de inteligență artificială am folosit ChatGPT, ca suport pentru generarea și analizarea unor funcții cerute în enunț.
 
-### 2. Scopul utilizării AI
+2. Scopul utilizării AI
 
-AI-ul a fost utilizat pentru a înțelege cum operează semnalele. De exemplu, am vrut să știu cum să tratez două semnale în același program, dacă pot să le combin implementarea sau nu.
+AI-ul a fost utilizat pentru a înțelege cum opereaza semnalele. De exemplu, am vrut sa stiu cum să tratez doua semnale in acelasi proram, daca pot sa le combin implementarea sau nu. 
 
-### 3. Prompturile utilizate
 
-**Prompt 1**
+3. Prompturile utilizate
 
-> Imi propun sa scriu un program in C ce necesita tratarea semnalului SIGUSR1 (trimis dintr-un alt program C atunci cand fac operatia de adunare dintr-un alt program C) si SIGINT pentru atunci cand termin din terminal executia. Cum as putea sa implementez acest lucru intr-un proiect? Ma intereseaza mainul.
+Prompt 1 – Imi propun sa scriu un program in C ce necesita tratarea semnalului SIGUSR1(trimis dintr-un alt program C atunci cand fac operatia de adunare dintr-un alt program C) si SIGINT pentru atunci cand termin
+din terminal executia. Cum as putea sa implementez acest lucru intr-un proiect? Ma intereseaza mainul.
 
-**Prompt 2**
+Prompt 2 – Imi doresc o implementare fara sigemptyset.
 
-> Imi doresc o implementare fara sigemptyset.
-
-### 4. Codul generat inițial de AI
+4. Codul generat inițial de AI
 
 AI-ul a generat la Prompt 1:
 
-```c
-void handle_sigusr1(int sig)
+    void handle_sigusr1(int sig)
 {
     suma += 5;
+
     printf("\n[SIGUSR1] S-a efectuat adunarea.\n");
     printf("Suma curenta: %d\n", suma);
 }
@@ -213,46 +205,47 @@ void handle_sigint(int sig)
     printf("\n[SIGINT] Programul se inchide...\n");
     running = 0;
 }
-```
 
 Iar în main:
 
-```c
-struct sigaction sa_usr1;
-struct sigaction sa_int;
+    struct sigaction sa_usr1;
+    struct sigaction sa_int;
 
-sa_usr1.sa_handler = handle_sigusr1;
-sigemptyset(&sa_usr1.sa_mask);
-sa_usr1.sa_flags = 0;
-sigaction(SIGUSR1, &sa_usr1, NULL);
+    // Handler pentru SIGUSR1
+    sa_usr1.sa_handler = handle_sigusr1;
+    sigemptyset(&sa_usr1.sa_mask);
+    sa_usr1.sa_flags = 0;
 
-sa_int.sa_handler = handle_sigint;
-sigemptyset(&sa_int.sa_mask);
-sa_int.sa_flags = 0;
-sigaction(SIGINT, &sa_int, NULL);
-```
+    sigaction(SIGUSR1, &sa_usr1, NULL);
+
+    // Handler pentru SIGINT
+    sa_int.sa_handler = handle_sigint;
+    sigemptyset(&sa_int.sa_mask);
+    sa_int.sa_flags = 0;
+
+    sigaction(SIGINT, &sa_int, NULL);
 
 AI-ul a generat la Prompt 2:
 
-```c
-struct sigaction sa_int, sa_usr1;
+    struct sigaction sa_int, sa_usr1;
 
-memset(&sa_int, 0, sizeof(sa_int));
-sa_int.sa_handler = handle_sigint;
-sigaction(SIGINT, &sa_int, NULL);
+    memset(&sa_int, 0, sizeof(sa_int));
+    sa_int.sa_handler = handle_sigint;
+    sigaction(SIGINT, &sa_int, NULL);
 
-memset(&sa_usr1, 0, sizeof(sa_usr1));
-sa_usr1.sa_handler = handle_sigusr1;
-sigaction(SIGUSR1, &sa_usr1, NULL);
-```
+    memset(&sa_usr1, 0, sizeof(sa_usr1));
+    sa_usr1.sa_handler = handle_sigusr1;
+    sigaction(SIGUSR1, &sa_usr1, NULL);
 
-### 5. Probleme identificate
 
-M-am gândit ulterior că nu e necesar să definesc două handle-uri, aș putea trata totul dintr-un singur handler. Am modificat acest lucru.
+5. Probleme identificate
 
-### 6. Îmbunătățiri aduse
+M-am gandit ulterior ca nu e necesar sa definesc doua handle-uri, as putea trata totul dintr-un singur handler. Am modificat acest lucru.
 
-```c
+6. Îmbunătățiri aduse
+
+Am modificat codul generat astfel:
+
 void handler(int sig)
 {
     if(sig==SIGINT)
@@ -266,58 +259,57 @@ void handler(int sig)
         printf("SIGUSR1 recieved. Adding new report.\n");
     }
 }
-```
 
-În main:
+In main:
 
-```c
-struct sigaction signal;
-memset(&signal,0,sizeof(signal));
-signal.sa_handler=handler;
-sigaction(SIGINT,&signal,NULL);
-sigaction(SIGUSR1,&signal,NULL);
-```
+    struct sigaction signal;
+    memset(&signal,0,sizeof(signal));
+    signal.sa_handler=handler;
+    sigaction(SIGINT,&signal,NULL);
+    sigaction(SIGUSR1,&signal,NULL);
 
-### 7. Ce am învățat
 
-- Să analizez critic cod generat de AI
-- Evitarea duplicării codului
-- Evitarea complicării codului
+7. Ce am învățat
 
-### 8. Concluzie
+Să analizez critic cod generat de AI
+Evitarea duplicării codului
+Evitarea complicarii codului
+
+8. Concluzie
 
 AI-ul a fost util cu scop didactic, dar a fost necesară intervenția mea pentru a corecta logica.
 
----
 
-## PHASE 3
 
-### 1. Instrument utilizat
+PHASE 3
 
-Am continuat să folosesc ChatGPT ca suport, de data aceasta pentru clarificarea modului de funcționare a pipe-urilor, `dup2()` și a arhitecturii cu procese multiple din `city_hub`.
+1. Instrument utilizat
 
-### 2. Scopul utilizării AI
+Am continuat să folosesc ChatGPT ca suport.
+
+2. Scopul utilizării AI
 
 Am avut nevoie de ajutor în două zone:
 
-1. **Înțelegerea fluxului de pipe + dup2** pentru a redirecta stdout-ul monitorului prin pipe spre hub_mon
-2. **Implementarea funcției de cleanup pentru dangling symlinks** — symlink-urile `active_reports-<district>` din Phase 1 pot deveni dangling (pointează spre fișiere șterse), iar la faza 3 am avut nevoie să le curăț corect înainte de anumite operații
+Înțelegerea fluxului de pipe + dup2 pentru a redirecta stdout-ul monitorului prin pipe spre hub_mon
+Implementarea funcției de cleanup pentru dangling symlinks, symlink-urile active_reports din Phase 1 pot deveni dangling (pointează spre fișiere șterse).
 
-### 3. Prompturile utilizate
+3. Prompturile utilizate
 
-**Prompt 1 – Pipe și dup2 între procese**
+Prompt 1
 
-> Am un program C în care un proces părinte (hub_mon) trebuie să citească output-ul unui proces copil (monitor_reports). Vreau să folosesc un pipe și dup2 pentru a redirecta stdout-ul copilului spre pipe. Cum ar arăta structura de fork + pipe + dup2 + exec? Ce descriptori trebuie închiși și în ce ordine?
+Am un program C în care un proces părinte (hub_mon) trebuie să citească output-ul unui proces copil (monitor_reports). Vreau să folosesc un pipe și dup2 pentru a redirecta stdout-ul copilului spre pipe. Cum ar arăta structura de fork + pipe + dup2 + exec? Ce descriptori trebuie închiși și în ce ordine?
 
-**Prompt 2 – Dangling symlinks**
+Prompt 2
 
-> În programul meu C am symlink-uri create cu symlink() care pointează spre fișiere reports.dat din directoare de districte. Dacă un district e șters (cu remove_district), symlink-ul rămâne dangling. Am nevoie de o funcție care parcurge directorul curent, identifică symlink-urile active_reports-* cu lstat(), verifică dacă sunt dangling (fișierul țintă nu există), și le șterge cu unlink(). Cum ar arăta o astfel de funcție?
+În programul meu C am symlink-uri create cu symlink() care pointează spre fișiere reports.dat din directoare de districte. 
+Dacă un district e șters (cu remove_district), symlink-ul rămâne dangling. 
+Am nevoie de o funcție care parcurge directorul curent, identifică symlink-urile active_reports-* cu lstat(), verifică dacă sunt dangling, și le șterge cu unlink().
 
-### 4. Codul generat inițial de AI
+4. Codul generat inițial de AI
 
-**La Prompt 1**, AI-ul a generat o structură generică:
+La Prompt 1, AI-ul a generat:
 
-```c
 int fd[2];
 pipe(fd);
 pid_t pid = fork();
@@ -337,11 +329,9 @@ while((n = read(fd[0], buf, sizeof(buf)-1)) > 0) {
 }
 close(fd[0]);
 wait(NULL);
-```
 
-**La Prompt 2**, AI-ul a generat:
+La Prompt 2, AI-ul a generat:
 
-```c
 void cleanup_dangling_symlinks(const char *prefix)
 {
     DIR *dir = opendir(".");
@@ -364,29 +354,26 @@ void cleanup_dangling_symlinks(const char *prefix)
     }
     closedir(dir);
 }
-```
 
-### 5. Probleme identificate
+5. Probleme identificate
 
-**Pentru Prompt 1:** Codul generat era corect ca structură de bază, dar nu acoperea cazul cu două fork-uri imbricate (hub_mon care fork-uiește monitorul). Am trebuit să adaptez pentru arhitectura cu trei procese: city_hub → hub_mon → monitor_reports, și să mă asigur că fiecare proces închide capetele de pipe pe care nu le folosește.
+Pentru Prompt 1: 
 
-Un alt aspect pe care AI-ul nu l-a menționat explicit: în hub_mon, după ce monitor-ul face exec, trebuie să închidem `filedes[1]` și în hub_mon (nu doar în copil), altfel pipe-ul nu se închide niciodată și `read()` din hub_mon blochează la infinit chiar dacă monitorul s-a terminat.
+Codul generat era corect ca structură de bază, dar nu acoperea cazul cu două fork-uri: hub_mon care fork-uiește monitorul. 
+Am trebuit să adaptez pentru arhitectura cu trei procese: city_hub → hub_mon → monitor_reports, și să mă asigur că fiecare proces închide capetele de pipe pe care nu le folosește.
+Un alt aspect pe care AI-ul nu l-a menționat explicit: în hub_mon, după ce monitor-ul face exec, trebuie să închidem filedes[1] și în hub_mon (nu doar în copil), altfel pipe-ul nu se închide niciodată și read() din hub_mon blochează la infinit chiar dacă monitorul s-a terminat.
 
-**Pentru Prompt 2:** Funcția generată nu verifica că `lstat()` a reușit înainte de a folosi rezultatul. De asemenea, nu trata cazul în care `opendir()` eșuează cu un mesaj de eroare explicit. Funcția nu includea nici header-ul necesar (`<dirent.h>`).
+Pentru Prompt 2: 
 
-### 6. Îmbunătățiri aduse
+Funcția generată nu verifica că lstat() a reușit înainte de a folosi rezultatul. De asemenea, nu trata cazul în care opendir() eșuează cu un mesaj de eroare explicit. Funcția nu includea nici header-ul necesar (<dirent.h>).
 
-**Pentru pipe + dup2:** Am adaptat structura generată pentru arhitectura cu trei niveluri, adăugând închiderea corectă a tuturor descriptorilor în fiecare proces:
+6. Îmbunătățiri aduse
 
-```c
-/* în hub_mon, după fork-ul monitorului */
-close(filedes[1]); /* crucial — fără asta, read() din hub_mon nu se termină */
-```
+Pentru pipe + dup2: Am adaptat structura generată pentru arhitectura cu trei niveluri, adăugând închiderea corectă a tuturor descriptorilor în fiecare proces:
 
-**Pentru dangling symlinks:** Am adăugat verificarea returnului `lstat()` și mesaje de eroare mai clare:
-
-```c
-void cleanup_dangling_symlinks(const char *prefix)
+close(filedes[1]);
+Pentru dangling symlinks: Am adăugat verificarea returnului lstat() și mesaje de eroare mai clare:
+cvoid cleanup_dangling_symlinks(const char *prefix)
 {
     DIR *dir = opendir(".");
     if(!dir)
@@ -405,7 +392,7 @@ void cleanup_dangling_symlinks(const char *prefix)
         if(!S_ISLNK(lst.st_mode))
             continue;
         struct stat st;
-        if(stat(entry->d_name, &st) != 0) /* stat eșuează = fișierul țintă nu există */
+        if(stat(entry->d_name, &st) != 0)
         {
             printf("Avertisment: symlink dangling detectat: %s. Se sterge.\n", entry->d_name);
             unlink(entry->d_name);
@@ -413,15 +400,13 @@ void cleanup_dangling_symlinks(const char *prefix)
     }
     closedir(dir);
 }
-```
+7. Ce am învățat
 
-### 7. Ce am învățat
+Cum funcționează pipe-ul la nivel de descriptori de fișiere și de ce e important să închidem capetele nefolosite
+Că dup2(fd, STDOUT_FILENO) face ca printf să scrie în pipe, nu pe terminal
+Diferența dintre stat() și lstat(): lstat() nu urmărește symlink-ul, stat() îl urmărește.
+Că AI-ul generează adesea exemple simple care nu acoperă cazurile de eroare, și că aceste cazuri sunt tocmai cele mai importante de testat
 
-- Cum funcționează pipe-ul la nivel de descriptori de fișiere și de ce e important să închidem capetele nefolosite
-- Că `dup2(fd, STDOUT_FILENO)` face ca `printf` să scrie în pipe, nu pe terminal
-- Diferența dintre `stat()` și `lstat()`: `lstat()` nu urmărește symlink-ul, `stat()` îl urmărește — combinația lor e utilă pentru detectarea dangling symlinks
-- Că AI-ul generează adesea exemple simple care nu acoperă cazurile de eroare, și că aceste cazuri sunt tocmai cele mai importante de testat
+8. Concluzie
 
-### 8. Concluzie
-
-Pentru Phase 3, AI-ul a fost util mai ales pentru a înțelege conceptele noi (pipe, dup2, arhitectura multi-proces). Codul generat a necesitat adaptări semnificative pentru a se potrivi cu arhitectura specifică a proiectului și pentru a trata corect cazurile de eroare. Partea cu dangling symlinks a clarificat și diferența practică dintre `stat()` și `lstat()`, pe care o știam teoretic dar nu o aplicasem înainte.
+Pentru Phase 3, AI-ul a fost util mai ales pentru a înțelege conceptele noi. 
