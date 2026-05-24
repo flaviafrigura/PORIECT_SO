@@ -2,3 +2,10 @@
 1779623690 [manager] agatha: Monitor not found
 1779623724 [inspector] ioana: Monitor not found
 1779623771 [inspector] ioana: Monitor not found
+1779641479 [manager] alice: filter_reports conditii=2 matched=2
+1779641541 [manager] agatha: view_report id=4
+1779641686 [inspector] ioana: Monitorul nu exista
+1779641688 [inspector] ioana: Monitorul nu exista
+1779641757 [manager] savanah: update_threshold value=2
+1779641896 [manager] savanah: update_threshold value=2
+1779641898 [manager] savanah: update_threshold value=2

@@ -10,3 +10,10 @@
 1777752854 [manager] savanah: Monitor notified successfully
 1777752856 [inspector] ileana: Monitor notified successfully
 1777752858 [inspector] anamira: Monitor notified successfully
+1779641496 [inspector] alice: filter_reports conditii=1 matched=0
+1779641524 [inspector] alice: filter_reports conditii=1 matched=5
+1779641531 [manager] alice: filter_reports conditii=1 matched=5
+1779641558 [manager] alice: list_reports
+1779641566 [inspector] alice: list_reports
+1779641597 [manager] alice: remove_report id=4
+1779641600 [inspector] alice: list_reports
