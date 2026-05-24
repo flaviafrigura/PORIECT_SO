@@ -365,41 +365,31 @@ Un alt aspect pe care AI-ul nu l-a menționat explicit: în hub_mon, după ce mo
 
 Pentru Prompt 2: 
 
-Funcția generată nu verifica că lstat() a reușit înainte de a folosi rezultatul. De asemenea, nu trata cazul în care opendir() eșuează cu un mesaj de eroare explicit. Funcția nu includea nici header-ul necesar (<dirent.h>).
+Funcția generată nu verifica că lstat() a reușit înainte de a folosi rezultatul.
 
 6. Îmbunătățiri aduse
 
-Pentru pipe + dup2: Am adaptat structura generată pentru arhitectura cu trei niveluri, adăugând închiderea corectă a tuturor descriptorilor în fiecare proces:
+Pentru pipe + dup2: Am adaptat structura generată pentru arhitectura cu trei niveluri, adăugând închiderea corectă a tuturor descriptorilor în fiecare proces.
+Pentru dangling symlinks: Am realizat mai clar functionalitatea codului generat
 
-close(filedes[1]);
-Pentru dangling symlinks: Am adăugat verificarea returnului lstat() și mesaje de eroare mai clare:
-cvoid cleanup_dangling_symlinks(const char *prefix)
+int check_symlink(const char *district)
 {
-    DIR *dir = opendir(".");
-    if(!dir)
+    char linkname[256];
+    sprintf(linkname,"active_reports-%s",district);
+    struct stat lst;
+    if(lstat(linkname,&lst)<0)
+        return 0;
+    if(!S_ISLNK(lst.st_mode))
+        return 0;
+    struct stat st;
+    if(stat(linkname,&st)<0)
     {
-        perror("Nu pot deschide directorul curent");
-        return;
+        printf("AVERTISMENT: Symlink-ul '%s' este dangling (tinta lipseste)!\n",linkname);
+        return 0;
     }
-    struct dirent *entry;
-    while((entry = readdir(dir)) != NULL)
-    {
-        if(strncmp(entry->d_name, prefix, strlen(prefix)) != 0)
-            continue;
-        struct stat lst;
-        if(lstat(entry->d_name, &lst) < 0)
-            continue;
-        if(!S_ISLNK(lst.st_mode))
-            continue;
-        struct stat st;
-        if(stat(entry->d_name, &st) != 0)
-        {
-            printf("Avertisment: symlink dangling detectat: %s. Se sterge.\n", entry->d_name);
-            unlink(entry->d_name);
-        }
-    }
-    closedir(dir);
+    return 1;
 }
+
 7. Ce am învățat
 
 Cum funcționează pipe-ul la nivel de descriptori de fișiere și de ce e important să închidem capetele nefolosite
