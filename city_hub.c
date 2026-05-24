@@ -19,13 +19,13 @@ void start_monitor()
     int filedes[2];
     if(pipe(filedes)<0)
     {
-        perror("Problem when creating the pipe");
+        perror("Problema la crearea pipeului");
         return;
     }
     pid_t hub_mon=fork();
     if(hub_mon<0)
     {
-        perror("Problem when creating child process hub_mon);
+        perror("Problema la crearea child process hub_mon");
         close(filedes[0]);
         close(filedes[1]);
         return;
@@ -35,7 +35,7 @@ void start_monitor()
         pid_t monitor=fork();
         if(monitor<0)
         {
-            perror("Problem when creating child process monitor");
+            perror("Problema la crearea child process monitor");
             exit(1);
         }
         if(monitor==0)
@@ -44,7 +44,7 @@ void start_monitor()
             dup2(filedes[1],STDOUT_FILENO);
             close(filedes[1]);
             execl("./monitor_reports","monitor_reports",NULL);
-            perror("Error when trying to replace ./monitor_reports");
+            perror("Eroare cand incercam sa inlocuim ./monitor_reports");
             exit(1);
         }
         close(filedes[1]);
@@ -55,9 +55,9 @@ void start_monitor()
             buffer[bytesread]='\0';
             printf("MONITOR: %s",buffer);
             fflush(stdout);
-            if(strstr(buffer,"TERMINATED:")!=NULL)
+            if(strstr(buffer,"TERMINAT:")!=NULL)
             {
-                printf("HUB: Monitor ended\n");
+                printf("HUB: Monitor terminat\n");
                 fflush(stdout);
             }
         }
@@ -67,7 +67,7 @@ void start_monitor()
     }
     close(filedes[0]);
     close(filedes[1]);
-    printf("Monitor now active\n");
+    printf("Monitor activ\n");
 }
 
 void calculate_scores(char *districts[],int count)
@@ -79,13 +79,13 @@ void calculate_scores(char *districts[],int count)
         int filedes[2];
         if(pipe(filedes)<0)
         {
-            perror("Problem when creating the pipe");
+            perror("Problema la crearea pipeului");
             continue;
         }
         pid_t scorer=fork();
         if(scorer<0)
         {
-            perror("Problem when creating the process");
+            perror("Problema la creerea procesului");
             close(filedes[0]);
             close(filedes[1]);
             continue;
@@ -96,13 +96,13 @@ void calculate_scores(char *districts[],int count)
             dup2(filedes[1],STDOUT_FILENO);
             close(filedes[1]);
             execl("./scorer","scorer",districts[i],NULL);
-            perror("Problem at scorer exec");
+            perror("Problema la exec scorer");
             exit(1);
         }
         close(filedes[1]);
         char buffer[4096];
         int bytesread;
-        char output[32768] = "";
+        char output[32768]="";
         while((bytesread=read(filedes[0],buffer,sizeof(buffer)-1))>0)
         {
             buffer[bytesread]='\0';
@@ -143,35 +143,23 @@ void calculate_scores(char *districts[],int count)
             line=strtok(NULL,"\n");
         }
     }
-    printf("Total overall:\n");
+    printf("Total:\n");
     if(person_count == 0)
     {
-        printf("No inspectors found in any district.\n");
+        printf("Nu au fost gasiti inspectori\n");
         return;
-    }
-    for(int i=0;i<person_count-1;i++)
-    {
-        for(int j=i+1;j<person_count;j++)
-        {
-            if(persons[i].totalscore<persons[j].totalscore)
-            {
-                inspector temp=persons[i];
-                persons[i]=persons[j];
-                persons[j]=temp;
-            }
-        }
     }
     for(int i=0;i<person_count;i++)
     {
         printf("%10s | %2d | %d\n",persons[i].name,persons[i].totalscore,persons[i].count);
     }
-    printf("Total inspectors: %d\n",person_count);
+    printf("Total inspectori: %d\n",person_count);
     int total=0;
     for(int i=0;i<person_count;i++)
     {
         total+=persons[i].totalscore;
     }
-    printf("Combined workload score across all inspectors: %d\n",total);
+    printf("Workload-ul combinat pentru toti inspectorii: %d\n",total);
 }
 
 int main()
@@ -184,7 +172,6 @@ int main()
         if(fgets(command,sizeof(command),stdin)==NULL)
             break;
         command[strcspn(command,"\n")]='\0';
-
         if(strcmp(command,"exit")==0)
             break;
         else if(strcmp(command,"start_monitor")==0)
@@ -201,12 +188,12 @@ int main()
                 p=strtok(NULL," ");
             }
             if(count==0)
-                printf("You didn't specify any districts\n");
+                printf("Nu ai denumit niciun district\n");
             else
                 calculate_scores(districts,count);
         }
         else
-            printf("Unknown command\n");
+            printf("Comanda necunoscuta\n");
     }
     return 0;
 }
