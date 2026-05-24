@@ -40,10 +40,28 @@ void mode_to_string(mode_t mode,char *str)
 
 void log_action(const char *district,const char *role,const char *user,const char *action)
 {
-    if(strcmp(role,"manager")!=0)
-        return;
     char path[256];
     sprintf(path,"%s/logged_district",district);
+    struct stat st;
+    if(stat(path,&st)==0)
+    {
+        if(strcmp(role,"manager")==0)
+        {
+            if(!(st.st_mode&S_IWUSR))
+            {
+                printf("Permisiune refuzata: managerul nu are drept de scriere pe logged_district\n");
+                return;
+            }
+        }
+        else
+        {
+            if(!(st.st_mode&S_IWGRP))
+            {
+                printf("Permisiune refuzata: inspectorul nu are drept de scriere pe logged_district\n");
+                return;
+            }
+        }
+    }
     int file=open(path,O_WRONLY|O_APPEND|O_CREAT,0644);
     if(file<0)
         return;
